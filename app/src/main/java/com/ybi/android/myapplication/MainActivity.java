@@ -1,11 +1,15 @@
 package com.ybi.android.myapplication;
 
+import android.annotation.TargetApi;
 import android.app.AlertDialog;
+import android.os.Build;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.Toast;
@@ -16,9 +20,14 @@ import java.util.Arrays;
 import se.emilsjolander.stickylistheaders.StickyListHeadersAdapter;
 import se.emilsjolander.stickylistheaders.StickyListHeadersListView;
 
-public class MainActivity extends AppCompatActivity implements SwipeActionAdapter.SwipeActionListener {
+public class MainActivity extends AppCompatActivity implements
+        SwipeActionAdapter.SwipeActionListener,
+        StickyListHeadersListView.OnHeaderClickListener,
+        StickyListHeadersListView.OnStickyHeaderChangedListener,
+        StickyListHeadersListView.OnStickyHeaderOffsetChangedListener {
 
     protected SwipeActionAdapter mAdapter;
+    private boolean fadeHeader = true;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -28,11 +37,16 @@ public class MainActivity extends AppCompatActivity implements SwipeActionAdapte
         //ListView stickyList = (ListView) findViewById(android.R.id.list);
         MyAdapter adapter = new MyAdapter(this);
 
-        mAdapter = new SwipeActionAdapter(adapter);
+        mAdapter = new SwipeActionAdapter(adapter, adapter);
         mAdapter.setSwipeActionListener(this)
                 .setDimBackgrounds(true)
                 .setListView(stickyList.getWrappedList());
-        stickyList.setAdapter((MyAdapter)(mAdapter.getAdapter()));
+        stickyList.setAreHeadersSticky(true);
+        stickyList.setAdapter(adapter);
+        stickyList.setOnHeaderClickListener(this);
+        stickyList.setDrawingListUnderStickyHeader(true);
+        stickyList.setOnStickyHeaderChangedListener(this);
+        stickyList.setOnStickyHeaderOffsetChangedListener(this);
         // Set backgrounds for the swipe directions
         mAdapter.addBackground(SwipeDirections.DIRECTION_FAR_LEFT,R.layout.row_bg_left_far)
                 .addBackground(SwipeDirections.DIRECTION_NORMAL_LEFT,R.layout.row_bg_left)
@@ -99,6 +113,25 @@ public class MainActivity extends AppCompatActivity implements SwipeActionAdapte
                     Toast.LENGTH_SHORT
             ).show();
             mAdapter.notifyDataSetChanged();
+        }
+    }
+
+
+    @Override
+    public void onHeaderClick(StickyListHeadersListView l, View header, int itemPosition, long headerId, boolean currentlySticky) {
+
+    }
+
+    @Override
+    @TargetApi(Build.VERSION_CODES.HONEYCOMB)
+    public void onStickyHeaderChanged(StickyListHeadersListView l, View header, int itemPosition, long headerId) {
+        header.setAlpha(1);
+    }
+
+    @Override
+    public void onStickyHeaderOffsetChanged(StickyListHeadersListView l, View header, int offset) {
+        if (fadeHeader && Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+            header.setAlpha(1 - (offset / (float) header.getMeasuredHeight()));
         }
     }
 }

@@ -27,13 +27,15 @@ package com.ybi.android.myapplication;
         import android.widget.BaseAdapter;
         import android.widget.ListView;
 
+        import se.emilsjolander.stickylistheaders.StickyListHeadersAdapter;
+
 /**
  * Adapter that adds support for multiple swipe actions to your ListView
  *
  * Created by wdullaer on 04.06.14.
  */
 public class SwipeActionAdapter extends DecoratorAdapter implements
-        SwipeActionTouchListener.ActionCallbacks
+        SwipeActionTouchListener.ActionCallbacks, StickyListHeadersAdapter
 {
     private ListView mListView;
     private SwipeActionTouchListener mTouchListener;
@@ -45,9 +47,11 @@ public class SwipeActionAdapter extends DecoratorAdapter implements
     private float mNormalSwipeFraction = 0.25f;
 
     protected SparseIntArray mBackgroundResIds = new SparseIntArray();
+    private StickyListHeadersAdapter listAdapter;
 
-    public SwipeActionAdapter(BaseAdapter baseAdapter){
+    public SwipeActionAdapter(StickyListHeadersAdapter listAdapter, BaseAdapter baseAdapter){
         super(baseAdapter);
+        this.listAdapter = listAdapter;
     }
 
     @Override
@@ -187,7 +191,7 @@ public class SwipeActionAdapter extends DecoratorAdapter implements
         this.mListView = listView;
         mTouchListener = new SwipeActionTouchListener(listView,this);
         this.mListView.setOnTouchListener(mTouchListener);
-        this.mListView.setOnScrollListener(mTouchListener.makeScrollListener());
+        //this.mListView.setOnScrollListener(mTouchListener.makeScrollListener());
         this.mListView.setClipChildren(false);
         mTouchListener.setFadeOut(mFadeOut);
         mTouchListener.setDimBackgrounds(mDimBackgrounds);
@@ -229,6 +233,16 @@ public class SwipeActionAdapter extends DecoratorAdapter implements
     public SwipeActionAdapter setSwipeActionListener(SwipeActionListener mSwipeActionListener){
         this.mSwipeActionListener = mSwipeActionListener;
         return this;
+    }
+
+    @Override
+    public View getHeaderView(int position, View convertView, ViewGroup parent) {
+        return listAdapter.getHeaderView(position,convertView, parent);
+    }
+
+    @Override
+    public long getHeaderId(int position) {
+        return listAdapter.getHeaderId(position);
     }
 
     /**

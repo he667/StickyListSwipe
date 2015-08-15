@@ -1,6 +1,7 @@
 package com.ybi.android.myapplication;
 
 import android.content.Context;
+import android.database.DataSetObserver;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -53,6 +54,8 @@ public class MyAdapter extends BaseAdapter implements StickyListHeadersAdapter {
         holder.text.setText(countries[position]);
 
         return convertView;
+
+
     }
 
     @Override

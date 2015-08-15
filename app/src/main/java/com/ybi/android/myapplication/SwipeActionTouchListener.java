@@ -274,7 +274,7 @@ public class SwipeActionTouchListener implements View.OnTouchListener {
                             if(!mFixedBackgrounds) mDownViewGroup.translateBackgrounds();
                         }
                         catch(Exception e) {
-                            Log.e("xxxx", "Erreur de merde", e);
+                            Log.e("xxxx", "Erreur", e);
                             mDownView = child;
                         }
                         break;
@@ -371,6 +371,7 @@ public class SwipeActionTouchListener implements View.OnTouchListener {
                             });
                 } else {
                     // cancel
+                    if (mDownView !=null && mDownViewGroup !=null)
                     mDownView.animate()
                             .translationX(0)
                             .alpha(1)
